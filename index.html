@@ -7,5 +7,23 @@
 <body>
     <h1>郑潇洒的个人blog</h1>
     <h1>Hello ~</h1>
+    <p>from Crypto.Cipher import DES,AES
+import os
+
+flag = b''
+secret_key = os.urandom(16)
+key1 = b''
+key2 = b''
+
+hint = os.urandom(16)
+print(hint)
+# b'"\xc0\xfb~u\xdf\x83\xa6\xa9\xa1\xfc\xf0,qJ\xd6'
+cipher = DES.new(key1,DES.MODE_ECB)
+print(DES.new(key2,DES.MODE_ECB).encrypt(cipher.encrypt(hint)))
+print(DES.new(key2,DES.MODE_ECB).encrypt(cipher.encrypt(secret_key)))
+print(AES.new(secret_key,AES.MODE_ECB).encrypt(flag))
+# b'"\xc0\xfb~u\xdf\x83\xa6\xa9\xa1\xfc\xf0,qJ\xd6'
+# b'Fa=\xf9|\xa0\xa1\x84\x9ca\xf4\xd2{\xcf+\xe1'
+# b'\x8e\x86\xf9Y\x8d\x14\xfeU\xbf\xc7\xfbCZ\x927W'</p>
 </body>
 </html>
