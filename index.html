@@ -3,529 +3,357 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新征程倒计时 | 团队告别与展望</title>
+    <title>为了更好的未来 - 倒计时</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
         }
         
         body {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), 
-                        url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             color: #fff;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         .container {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
+            max-width: 1000px;
+            width: 90%;
             text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 20px;
-            animation: fadeIn 1s ease-out;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            margin: 20px;
         }
         
-        .logo {
-            font-size: 4rem;
-            color: #4CAF50;
-            margin-bottom: 15px;
-        }
-        
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
-            color: #fff;
-            background: linear-gradient(to right, #4CAF50, #8BC34A);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .title {
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            color: #FFE162;
+            text-shadow: 3px 3px 0 #FF6B6B, 6px 6px 0 rgba(0, 0, 0, 0.1);
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 2px;
         }
         
         .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #FFF9B2;
+            font-weight: 500;
+        }
+        
+        .date-display {
             font-size: 1.6rem;
-            opacity: 0.9;
-            margin-bottom: 10px;
-            font-weight: 300;
-            color: #e0f7fa;
-        }
-        
-        .highlight {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        
-        .target-date {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #4CAF50;
-            margin-top: 15px;
+            background: linear-gradient(90deg, #FF9A9E, #FAD0C4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 40px;
             padding: 10px 20px;
-            background: rgba(76, 175, 80, 0.1);
-            border-radius: 10px;
             display: inline-block;
+            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
         
-        .countdown-container {
+        .countdown {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: 25px;
-            margin: 50px 0;
-            animation: slideUp 1s ease-out;
+            margin-bottom: 40px;
         }
         
-        .countdown-box {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
             padding: 30px 20px;
             min-width: 160px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .countdown-box:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-        }
-        
-        .countdown-value {
-            font-size: 4.5rem;
-            font-weight: 700;
-            line-height: 1;
-            color: #4CAF50;
-            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-        }
-        
-        .countdown-label {
-            font-size: 1.2rem;
-            margin-top: 10px;
-            color: #e0f7fa;
-        }
-        
-        .message-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            margin: 40px 0;
-            justify-content: center;
-        }
-        
-        .message-box {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            padding: 30px;
-            flex: 1;
-            min-width: 300px;
-            max-width: 550px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 1.5s ease-out;
-            border-top: 5px solid #4CAF50;
-        }
-        
-        .message-box h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #4CAF50;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .message-box p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        
-        .team-memories {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            padding: 40px;
-            margin: 40px auto;
-            max-width: 1000px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            animation: slideUp 1.5s ease-out;
-        }
-        
-        .team-memories h2 {
-            font-size: 2.2rem;
-            margin-bottom: 30px;
-            color: #4CAF50;
-        }
-        
-        .memories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-        
-        .memory-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            transition: all 0.3s;
-            text-align: left;
-        }
-        
-        .memory-item:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.15);
-        }
-        
-        .memory-item i {
-            font-size: 2.5rem;
-            color: #4CAF50;
-            margin-bottom: 15px;
-        }
-        
-        .memory-item h3 {
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            color: #e0f7fa;
-        }
-        
-        .memory-item p {
-            font-size: 1rem;
-            color: #b0bec5;
-        }
-        
-        .future-section {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            padding: 40px;
-            margin: 40px auto;
-            max-width: 1000px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 2s ease-out;
-            border-bottom: 5px solid #4CAF50;
-        }
-        
-        .future-section h2 {
-            font-size: 2.2rem;
-            margin-bottom: 20px;
-            color: #4CAF50;
-        }
-        
-        .future-section p {
-            font-size: 1.3rem;
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-        
-        .quote {
-            font-size: 1.8rem;
-            font-style: italic;
-            color: #e0f7fa;
-            margin: 40px auto;
-            padding: 20px;
-            border-left: 5px solid #4CAF50;
-            background: rgba(76, 175, 80, 0.1);
-            border-radius: 0 10px 10px 0;
-            max-width: 800px;
-        }
-        
-        .progress-container {
-            width: 100%;
-            max-width: 800px;
-            margin: 40px auto;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            padding: 30px;
-        }
-        
-        .progress-bar {
-            height: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin-top: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s ease;
+            position: relative;
             overflow: hidden;
         }
         
-        .progress {
-            height: 100%;
-            background: linear-gradient(to right, #4CAF50, #8BC34A);
-            width: 0%;
-            border-radius: 10px;
-            transition: width 1s ease;
+        .countdown-item:hover {
+            transform: translateY(-15px) scale(1.05);
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
         
-        .progress-text {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            font-size: 1.1rem;
-        }
-        
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            padding: 25px;
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        .countdown-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #FF9A9E, #FAD0C4, #A1C4FD, #C2E9FB);
         }
         
-        /* 动画效果 */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .countdown-value {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .days { color: #FFE162; }
+        .hours { color: #FF9A9E; }
+        .minutes { color: #A1C4FD; }
+        .seconds { color: #C2E9FB; }
+        
+        .countdown-label {
+            font-size: 1.2rem;
+            color: #FFF9B2;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .message {
+            font-size: 1.8rem;
+            margin: 40px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border-left: 5px solid #FFE162;
+            color: #FFF;
+            line-height: 1.6;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         }
         
-        .pulse {
-            animation: pulse 2s infinite;
+        .highlight {
+            color: #FFE162;
+            font-weight: 700;
+            text-shadow: 1px 1px 0 #FF6B6B;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            color: #FFF9B2;
+            font-size: 1.1rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 装饰元素 */
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .celebration {
+            position: absolute;
+            font-size: 2rem;
+            color: #FFE162;
+            z-index: 2;
+            animation: celebration 3s infinite alternate;
+        }
+        
+        @keyframes celebration {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.2); opacity: 1; }
         }
         
         /* 响应式设计 */
         @media (max-width: 768px) {
-            h1 { font-size: 2.2rem; }
-            .subtitle { font-size: 1.3rem; }
-            .countdown-box { min-width: 130px; padding: 20px 10px; }
-            .countdown-value { font-size: 3.5rem; }
-            .countdown-label { font-size: 1rem; }
-            .message-box { padding: 20px; }
-            .message-box h2 { font-size: 1.5rem; }
-            .message-box p { font-size: 1.1rem; }
-            .team-memories, .future-section { padding: 25px; }
-            .memories-grid { grid-template-columns: 1fr; }
+            .title { font-size: 2.5rem; }
+            .countdown-item { min-width: 130px; padding: 20px 15px; }
+            .countdown-value { font-size: 3rem; }
+            .message { font-size: 1.5rem; }
         }
         
-        @media (max-width: 480px) {
-            h1 { font-size: 1.8rem; }
-            .countdown-container { gap: 15px; }
-            .countdown-box { min-width: 100px; }
-            .countdown-value { font-size: 2.8rem; }
-            .quote { font-size: 1.4rem; }
+        @media (max-width: 576px) {
+            .title { font-size: 2rem; }
+            .countdown { gap: 15px; }
+            .countdown-item { min-width: 100px; padding: 15px 10px; }
+            .countdown-value { font-size: 2.5rem; }
+            .message { font-size: 1.3rem; }
+            .date-display { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
+    <!-- 浮动装饰元素 -->
+    <div class="floating-element" style="width: 80px; height: 80px; top: 10%; left: 5%; background: rgba(255, 154, 158, 0.2);"></div>
+    <div class="floating-element" style="width: 120px; height: 120px; top: 70%; right: 8%; background: rgba(161, 196, 253, 0.2);"></div>
+    <div class="floating-element" style="width: 60px; height: 60px; bottom: 20%; left: 15%; background: rgba(255, 225, 98, 0.2);"></div>
+    
+    <!-- 庆祝图标 -->
+    <div class="celebration" style="top: 15%; right: 10%;"><i class="fas fa-glass-cheers"></i></div>
+    <div class="celebration" style="bottom: 15%; left: 10%;"><i class="fas fa-star"></i></div>
+    
     <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-users"></i>
-            </div>
-            <h1>新征程倒计时</h1>
-            <p class="subtitle">告别不是结束，而是新旅程的开始</p>
-            <p class="subtitle">我们的团队，永远的记忆，更好的未来</p>
-            <p class="target-date">2026年2月14日 18:30</p>
-        </header>
+        <h1 class="title">为了更好的未来</h1>
+        <p class="subtitle">项目组解散倒计时 · 新征程的起点</p>
         
-        <div class="countdown-container">
-            <div class="countdown-box">
-                <div class="countdown-value" id="days">00</div>
+        <div class="date-display">
+            <i class="far fa-calendar-alt"></i> 2026年2月14日 18:30
+        </div>
+        
+        <div class="countdown">
+            <div class="countdown-item">
+                <div class="countdown-value days" id="days">00</div>
                 <div class="countdown-label">天</div>
             </div>
-            <div class="countdown-box">
-                <div class="countdown-value" id="hours">00</div>
+            <div class="countdown-item">
+                <div class="countdown-value hours" id="hours">00</div>
                 <div class="countdown-label">小时</div>
             </div>
-            <div class="countdown-box">
-                <div class="countdown-value" id="minutes">00</div>
+            <div class="countdown-item">
+                <div class="countdown-value minutes" id="minutes">00</div>
                 <div class="countdown-label">分钟</div>
             </div>
-            <div class="countdown-box">
-                <div class="countdown-value" id="seconds">00</div>
+            <div class="countdown-item">
+                <div class="countdown-value seconds" id="seconds">00</div>
                 <div class="countdown-label">秒</div>
             </div>
         </div>
         
-        <div class="progress-container">
-            <h2><i class="fas fa-chart-line"></i> 共同旅程进度</h2>
-            <div class="progress-bar">
-                <div class="progress" id="progress"></div>
-            </div>
-            <div class="progress-text">
-                <span>团队成立</span>
-                <span id="progress-percentage">0%</span>
-                <span>新征程开始</span>
-            </div>
+        <div class="message">
+            感谢每一位团队成员的付出与努力！<br>
+            <span class="highlight">结束是新的开始</span>，让我们带着经验与友谊<br>
+            迎接各自<span class="highlight">更精彩的未来</span>！
         </div>
         
-        <div class="message-container">
-            <div class="message-box">
-                <h2><i class="fas fa-heart"></i> 致我们最棒的团队</h2>
-                <p>这些年来，我们一起经历了无数挑战与胜利，每一个项目、每一次讨论、每一次庆功，都深深印在我们的记忆里。</p>
-                <p>在这个特别的团队里，我们不仅是同事，更是彼此的战友、朋友和支持者。每个人的独特才华和无私奉献，共同铸就了团队的辉煌。</p>
-                <p>虽然团队即将解散，但我们建立的联系、分享的笑声和共同成长的经历，将会成为我们每个人最宝贵的财富。</p>
-            </div>
-            
-            <div class="message-box">
-                <h2><i class="fas fa-star"></i> 关于未来</h2>
-                <p>离别是为了更好的重逢，解散是为了各自更精彩的旅程。我们每个人都将带着从团队中学到的经验、技能和友谊，走向新的高度。</p>
-                <p>无论未来将我们带向何方，请记住：我们曾经是一个无与伦比的团队，而这份团队的灵魂将永远伴随着我们。</p>
-                <p>期待在未来的某一天，我们以全新的面貌重逢，分享彼此在新征程上的成就与故事。</p>
-            </div>
-        </div>
-        
-        <div class="team-memories">
-            <h2><i class="fas fa-memory"></i> 团队记忆碎片</h2>
-            <p>那些我们一起创造的难忘时刻</p>
-            
-            <div class="memories-grid">
-                <div class="memory-item">
-                    <i class="fas fa-laugh"></i>
-                    <h3>欢声笑语</h3>
-                    <p>无数个加班夜晚的相互支持与团队聚餐时的开怀大笑</p>
-                </div>
-                <div class="memory-item">
-                    <i class="fas fa-trophy"></i>
-                    <h3>共同成就</h3>
-                    <p>我们一起攻克的技术难题和庆祝每一个项目成功的时刻</p>
-                </div>
-                <div class="memory-item">
-                    <i class="fas fa-lightbulb"></i>
-                    <h3>创意碰撞</h3>
-                    <p>头脑风暴时思想的火花和那些改变一切的好点子</p>
-                </div>
-                <div class="memory-item">
-                    <i class="fas fa-hands-helping"></i>
-                    <h3>相互扶持</h3>
-                    <p>困难时刻的相互鼓励和成功时刻的真诚祝贺</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="quote">
-            <i class="fas fa-quote-left"></i> 聚是一团火，散是满天星。我们的团队精神将永远照亮彼此前行的道路 <i class="fas fa-quote-right"></i>
-        </div>
-        
-        <div class="future-section">
-            <h2><i class="fas fa-road"></i> 新征程，新起点</h2>
-            <p>团队解散不是终点，而是每个人新旅程的起点。我们将带着从彼此身上学到的智慧、勇气和韧性，迎接未来的挑战。</p>
-            <p>无论你接下来将踏上怎样的道路，请记得：你曾经是这支优秀团队的一员，这段经历已经让你变得更强大、更有能力。</p>
-            <p>愿我们每个人在新的岗位上继续发光发热，创造属于自己的一片天地。期待在未来的某一天，听到大家的好消息！</p>
-            
-            <div class="pulse" style="margin-top:30px; font-size:1.5rem; color:#4CAF50;">
-                <i class="fas fa-hand-peace"></i> 祝福彼此，前程似锦！ <i class="fas fa-hand-peace"></i>
-            </div>
+        <div class="footer">
+            <p><i class="fas fa-heart"></i> 聚是一团火，散是满天星 <i class="fas fa-heart"></i></p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">© 2026 项目组 · 珍重再见</p>
         </div>
     </div>
-    
-    <footer>
-        <p>新征程倒计时页面 | 最后更新: <span id="current-time"></span></p>
-        <p>© 2025-2026 我们的团队 | 纪念我们共同的旅程与友谊</p>
-    </footer>
 
     <script>
-        // 设置目标日期时间：2026年2月14日18:30
+        // 设置目标日期：2026年2月14日18:30
         const targetDate = new Date('2026-02-14T18:30:00').getTime();
-        
-        // 假设团队开始日期为2024年6月1日
-        const startDate = new Date('2024-06-01T00:00:00').getTime();
-        const totalDuration = targetDate - startDate;
         
         // 更新倒计时
         function updateCountdown() {
             const now = new Date().getTime();
             const timeLeft = targetDate - now;
             
-            // 如果时间已到
-            if (timeLeft < 0) {
-                document.getElementById('days').innerHTML = '00';
-                document.getElementById('hours').innerHTML = '00';
-                document.getElementById('minutes').innerHTML = '00';
-                document.getElementById('seconds').innerHTML = '00';
-                document.getElementById('progress').style.width = '100%';
-                document.getElementById('progress-percentage').innerHTML = '100%';
-                
-                // 显示新征程开始消息
-                document.querySelector('h1').innerHTML = '新征程已经开始';
-                document.querySelector('h1').style.animation = 'pulse 2s infinite';
-                document.querySelector('.subtitle').innerHTML = '2026年2月14日18:30 - 新征程启航';
-                
-                // 更新主标题区域背景色
-                document.querySelector('header').style.background = 'rgba(76, 175, 80, 0.2)';
-                
-                // 显示庆祝信息
-                const messageBoxes = document.querySelectorAll('.message-box');
-                if (messageBoxes.length > 0) {
-                    messageBoxes[0].querySelector('h2').innerHTML = '<i class="fas fa-glass-cheers"></i> 新征程快乐！';
-                    messageBoxes[0].querySelector('p').innerHTML = '今天，我们正式踏上各自的新征程！愿我们每个人都前程似锦，在新的道路上继续闪耀！';
-                }
-                
-                return;
-            }
-            
-            // 计算天、时、分、秒
+            // 计算天、小时、分钟和秒
             const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
             const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
             
-            // 更新倒计时显示
-            document.getElementById('days').innerHTML = days.toString().padStart(2, '0');
-            document.getElementById('hours').innerHTML = hours.toString().padStart(2, '0');
-            document.getElementById('minutes').innerHTML = minutes.toString().padStart(2, '0');
-            document.getElementById('seconds').innerHTML = seconds.toString().padStart(2, '0');
+            // 更新显示
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
             
-            // 更新进度条
-            const timePassed = now - startDate;
-            const progressPercentage = Math.min(100, (timePassed / totalDuration * 100).toFixed(1));
-            document.getElementById('progress').style.width = progressPercentage + '%';
-            document.getElementById('progress-percentage').innerHTML = progressPercentage + '%';
+            // 如果倒计时结束
+            if (timeLeft < 0) {
+                clearInterval(countdownInterval);
+                document.querySelector('.title').textContent = "新征程已开启！";
+                document.querySelector('.subtitle').textContent = "感谢相遇，未来可期！";
+                
+                // 更新倒计时显示为庆祝信息
+                const countdown = document.querySelector('.countdown');
+                countdown.innerHTML = `
+                    <div style="font-size: 4rem; color: #FFE162; margin: 20px;">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div style="font-size: 1.5rem; color: #FFF9B2;">
+                        项目组已圆满完成使命！<br>祝愿大家前程似锦！
+                    </div>
+                `;
+                
+                // 添加更多庆祝元素
+                addCelebrationEffects();
+            }
+        }
+        
+        // 添加庆祝效果
+        function addCelebrationEffects() {
+            // 改变背景动画速度
+            document.body.style.animationDuration = "5s";
             
-            // 更新时间
-            const currentTime = new Date();
-            document.getElementById('current-time').innerHTML = currentTime.toLocaleString('zh-CN');
+            // 添加更多浮动庆祝图标
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 5; i++) {
+                const celeb = document.createElement('div');
+                celeb.className = 'celebration';
+                celeb.style.left = `${Math.random() * 90 + 5}%`;
+                celeb.style.top = `${Math.random() * 90 + 5}%`;
+                celeb.innerHTML = '<i class="fas fa-star"></i>';
+                document.body.appendChild(celeb);
+            }
+        }
+        
+        // 创建更多浮动装饰元素
+        function createFloatingElements() {
+            const colors = [
+                'rgba(255, 154, 158, 0.15)',
+                'rgba(161, 196, 253, 0.15)',
+                'rgba(255, 225, 98, 0.15)',
+                'rgba(194, 233, 251, 0.15)'
+            ];
+            
+            for (let i = 0; i < 8; i++) {
+                const element = document.createElement('div');
+                element.className = 'floating-element';
+                const size = Math.random() * 80 + 40;
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.left = `${Math.random() * 90 + 5}%`;
+                element.style.top = `${Math.random() * 90 + 5}%`;
+                element.style.background = colors[Math.floor(Math.random() * colors.length)];
+                element.style.animationDuration = `${Math.random() * 20 + 10}s`;
+                element.style.animationDelay = `${Math.random() * 5}s`;
+                document.body.appendChild(element);
+            }
         }
         
         // 初始调用
         updateCountdown();
+        createFloatingElements();
         
         // 每秒更新一次
-        setInterval(updateCountdown, 1000);
+        const countdownInterval = setInterval(updateCountdown, 1000);
         
-        // 页面加载时显示当前时间
-        window.onload = function() {
-            updateCountdown();
-            const now = new Date();
-            document.getElementById('current-time').innerHTML = now.toLocaleString('zh-CN');
-            
-            // 添加记忆项目的随机动画延迟
-            const memoryItems = document.querySelectorAll('.memory-item');
-            memoryItems.forEach((item, index) => {
-                item.style.animationDelay = `${index * 0.2}s`;
+        // 添加鼠标悬停效果
+        document.querySelectorAll('.countdown-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.05)';
             });
-        };
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
     </script>
 </body>
 </html>
