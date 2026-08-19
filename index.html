@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>微信通话 - Light</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-primary: #e6dfd3;
+            --text-secondary: rgba(230, 223, 211, 0.5);
+            --btn-green: #2ea66a;
+            --btn-red: #c44d56;
+            --btn-gray: rgba(255, 255, 255, 0.08);
+            --warm-glow: #d4a24a;
+            --warm-soft: rgba(212, 162, 74, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            height: 100dvh;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            height: 100dvh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: var(--text-primary);
+            position: relative;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* 背景模糊层 */
+        .bg-blur {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 50% 30%, rgba(212, 162, 74, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at center, #1a1520 0%, #0d1117 70%);
+            filter: blur(40px);
+            z-index: 0;
+            transform: scale(1.5);
+        }
+
+        /* 顶部导航栏区域 */
+        .nav-bar {
+            position: relative;
+            z-index: 10;
+            min-height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+        }
+
+        /* 顶部中间计时器 */
+        .top-timer {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 17px;
+            font-weight: 500;
+            color: white;
+            letter-spacing: 1px;
+            opacity: 0; 
+            transition: opacity 0.3s;
+        }
+        
+        .top-timer.visible {
+            opacity: 1;
+        }
+
+        /* 顶部内容区域 (头像等) */
+        .top-section {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 20px;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .top-section.ivr-active .avatar-container {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 10px;
+        }
+
+        .top-section.ivr-active .emoji-avatar {
+            width: 52px;
+            height: 52px;
+        }
+
+        .top-section.ivr-active .name {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .top-section.ivr-active .status {
+            font-size: 13px;
+            height: 18px;
+        }
+
+        .emoji-avatar {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            position: relative;
+            z-index: 2;
+        }
+
+        .ripple {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 162, 74, 0.2);
+            opacity: 0;
+            z-index: 1;
+            animation: ripple-anim 2s infinite cubic-bezier(0, 0.2, 0.8, 1);
+        }
+
+        .ripple:nth-child(2) { animation-delay: 0.6s; }
+        .ripple:nth-child(3) { animation-delay: 1.2s; }
+
+        @keyframes ripple-anim {
+            0% { width: 100px; height: 100px; opacity: 0.8; }
+            100% { width: 240px; height: 240px; opacity: 0; }
+        }
+
+        .name {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .status {
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            height: 20px;
+        }
+
+        /* 底部操作区域 */
+        .bottom-section {
+            position: relative;
+            z-index: 1;
+            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+            padding-left: 20px;
+            padding-right: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 40px;
+            margin-top: 16px;
+        }
+
+        .action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .action-item:active {
+            transform: scale(0.92);
+        }
+
+        .icon-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+        }
+
+        .icon-btn svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .label {
+            font-size: 13px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .btn-reject { background-color: var(--btn-red); }
+        .btn-accept { background-color: var(--btn-green); }
+        .btn-feature { background-color: var(--btn-gray); }
+        
+        .btn-feature.muted {
+            background-color: var(--btn-gray);
+        }
+        .btn-feature.muted svg {
+            fill: white;
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* 通话结束遮罩 */
+        .ended-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(13, 17, 23, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+        }
+
+        .ended-overlay.show {
+            display: flex;
+        }
+
+        .ended-emoji {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            margin-bottom: 12px;
+        }
+
+        .ended-name {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .ended-detail {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+        }
+
+        .ended-actions {
+            display: flex;
+            gap: 48px;
+        }
+
+        .ended-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .ended-action:active {
+            transform: scale(0.92);
+        }
+
+        .ended-action .icon-btn {
+            width: 56px;
+            height: 56px;
+            background: var(--btn-gray);
+        }
+
+        .ended-action .icon-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .ended-action .label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ===== IVR 语音信箱 ===== */
+        .ivr-message {
+            display: none !important;
+        }
+
+        .ivr-message-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+            padding-left: 22px;
+        }
+
+        .ivr-message-text.speaking {
+            animation: ivr-pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes ivr-pulse {
+            0%, 100% { opacity: 0.85; }
+            50% { opacity: 0.5; }
+        }
+
+        .ivr-status {
+            font-size: 12px;
+            color: rgba(212, 162, 74, 0.5);
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .ivr-status.show {
+            display: block;
+        }
+
+        /* 拨号盘 */
+        .dialpad-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .dialpad-section.show {
+            display: flex;
+        }
+
+        .dial-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .dial-key {
+            flex: 1;
+            height: 62px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 6px 2px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .dial-key:active {
+            background: rgba(212, 162, 74, 0.12);
+            border-color: rgba(212, 162, 74, 0.35);
+            box-shadow: 0 0 16px rgba(212, 162, 74, 0.15), inset 0 0 8px rgba(212, 162, 74, 0.05);
+            transform: scale(0.96);
+        }
+
+        .dial-key .key-digit {
+            font-size: 20px;
+            font-weight: 500;
+            color: rgba(230, 223, 211, 0.9);
+            line-height: 1;
+            font-family: "SF Mono", "Menlo", "Consolas", monospace;
+        }
+
+        .dial-key .key-sub {
+            font-size: 10px;
+            color: rgba(230, 223, 211, 0.35);
+            margin-top: 3px;
+            white-space: nowrap;
+            letter-spacing: 1px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-blur"></div>
+
+    <!-- 顶部导航栏 -->
+    <div class="nav-bar">
+        <!-- 顶部中间计时器 -->
+        <div class="top-timer" id="topTimer">00:00</div>
+    </div>
+
+    <!-- 顶部信息区域 -->
+    <div class="top-section">
+        <div class="avatar-container">
+            <div class="ripple"></div>
+            <div class="ripple"></div>
+            <div class="ripple"></div>
+            <img class="emoji-avatar" src="picture.jpg" alt="Light">
+        </div>
+        <div class="name">light</div>
+        <div class="status" id="callStatus">邀请你语音通话...</div>
+        <!-- IVR 语音留言显示 -->
+        <div class="ivr-message" id="ivrMessage">
+            <div class="ivr-message-text" id="ivrText"></div>
+        </div>
+        <div class="ivr-status" id="ivrStatus"></div>
+    </div>
+
+    <!-- 底部按钮区域 -->
+    <div class="bottom-section">
+        
+        <!-- 场景1：来电等待中 (2个按钮) -->
+        <div id="incoming-actions" class="action-group">
+            <div class="action-item" onclick="handleReject()">
+                <div class="icon-btn btn-reject">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
+                    </svg>
+                </div>
+                <span class="label">拒绝</span>
+            </div>
+
+            <div class="action-item" onclick="handleAccept()">
+                <div class="icon-btn btn-accept">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.44-5.15-3.75-6.59-6.59l1.97-1.57c.26-.27.36-.66.25-1.01-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3.3 3 3.24 3 7.99c0 6.63 5.37 12 12 12 4.75 0 4.69-.65 4.69-1.19v-3.73c0-.54-.45-.99-.99-.99z"/>
+                    </svg>
+                </div>
+                <span class="label">接听</span>
+            </div>
+        </div>
+
+        <!-- IVR 拨号盘 -->
+        <div class="dialpad-section" id="dialpadSection">
+            <div class="dial-row">
+                <div class="dial-key" onclick="handleKeyPress('1')"><span class="key-digit">1</span><span class="key-sub">吐槽开解</span></div>
+                <div class="dial-key" onclick="handleKeyPress('2')"><span class="key-digit">2</span><span class="key-sub">允许摆烂</span></div>
+                <div class="dial-key" onclick="handleKeyPress('3')"><span class="key-digit">3</span><span class="key-sub">强行转移</span></div>
+            </div>
+            <div class="dial-row">
+                <div class="dial-key" onclick="handleKeyPress('4')"><span class="key-digit">4</span><span class="key-sub">客观肯定</span></div>
+                <div class="dial-key" onclick="handleKeyPress('5')"><span class="key-digit">5</span><span class="key-sub">纯粹陪伴</span></div>
+                <div class="dial-key" onclick="handleKeyPress('6')"><span class="key-digit">6</span><span class="key-sub">宇宙偏爱</span></div>
+            </div>
+            <div class="dial-row">
+                <div class="dial-key" onclick="handleKeyPress('7')"><span class="key-digit">7</span><span class="key-sub">霸道指令</span></div>
+                <div class="dial-key" onclick="handleKeyPress('8')"><span class="key-digit">8</span><span class="key-sub">玄学占卜</span></div>
+                <div class="dial-key" onclick="handleKeyPress('9')"><span class="key-digit">9</span><span class="key-sub">睡前故事</span></div>
+            </div>
+            <div class="dial-row">
+                <div class="dial-key" onclick="handleKeyPress('*')"><span class="key-digit">✱</span><span class="key-sub"></span></div>
+                <div class="dial-key" onclick="handleKeyPress('0')"><span class="key-digit">0</span><span class="key-sub">终极浪漫</span></div>
+                <div class="dial-key" onclick="handleKeyPress('#')"><span class="key-digit">#</span><span class="key-sub"></span></div>
+            </div>
+        </div>
+
+        <!-- 场景2：通话进行中 (3个按钮) -->
+        <div id="ongoing-actions" class="action-group hidden">
+            <!-- 麦克风 -->
+            <div class="action-item" onclick="toggleFeature(this)">
+                <div class="icon-btn btn-feature active">
+                    <svg viewBox="0 0 24 24" class="icon-on">
+                         <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                         <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                    <svg viewBox="0 0 24 24" class="icon-off hidden">
+                        <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08L12 14.2v.79c0 .61-.49 1.1-1.1 1.1-.53 0-.97-.38-1.08-.89L8.6 15.3c.92.44 1.96.7 3.05.7.22 0 .44-.02.66-.05l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5H4c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c.99-.14 1.92-.47 2.77-.94l2.63 2.63 1.27-1.27L4.27 3z"/>
+                    </svg>
+                </div>
+                <span class="label">麦克风</span>
+            </div>
+
+            <!-- 挂断/取消 -->
+            <div class="action-item" onclick="handleHangup()">
+                <div class="icon-btn btn-reject">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
+                    </svg>
+                </div>
+                <span class="label">挂断</span>
+            </div>
+
+            <!-- 扬声器 -->
+            <div class="action-item" id="speakerBtn" onclick="toggleSpeaker()">
+                <div class="icon-btn btn-feature active">
+                    <svg viewBox="0 0 24 24" class="icon-on">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                    <svg viewBox="0 0 24 24" class="icon-off hidden">
+                        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                    </svg>
+                </div>
+                <span class="label">扬声器已开</span>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- 通话结束遮罩 -->
+    <div class="ended-overlay" id="endedOverlay">
+        <img class="ended-emoji" src="picture.jpg" alt="Light">
+        <div class="ended-name">light</div>
+        <div class="ended-detail" id="endedDetail">通话时长 00:00</div>
+        <div class="ended-actions">
+            <div class="ended-action" onclick="closeEnded()">
+                <div class="icon-btn">
+                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </div>
+                <span class="label">返回</span>
+            </div>
+            <div class="ended-action" onclick="recall()">
+                <div class="icon-btn">
+                    <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.44-5.15-3.75-6.59-6.59l1.97-1.57c.26-.27.36-.66.25-1.01-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3.3 3 3.24 3 7.99c0 6.63 5.37 12 12 12 4.75 0 4.69-.65 4.69-1.19v-3.73c0-.54-.45-.99-.99-.99z"/></svg>
+                </div>
+                <span class="label">回拨</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const incomingActions = document.getElementById('incoming-actions');
+        const ongoingActions = document.getElementById('ongoing-actions');
+        const statusEl = document.getElementById('callStatus');
+        const topTimerEl = document.getElementById('topTimer');
+        const ripples = document.querySelectorAll('.ripple');
+        
+        let timerInterval;
+        let seconds = 0;
+
+        // ========== 来电铃声系统 ==========
+        // 使用自定义铃声文件 ring.mp3，循环播放
+        const ringAudio = new Audio('ring.mp3');
+        ringAudio.loop = true;
+        ringAudio.preload = 'auto';
+        ringAudio.dataset.playing = 'true'; // 页面加载即为响铃状态
+
+        // ========== 语音留言（Web Audio API） ==========
+        // 一次性调度：在用户点击接听时，将 begin.m4a 和 choose.m4a 背靠背调度播放
+        // 不依赖 ended 事件回调，避免浏览器阻止异步 play()
+        let voiceCtx = null;
+        let voiceGain = null;
+        let voiceSources = [];
+        let voiceBuffers = {};
+        let ivrTimer = null;
+
+        async function initVoiceAudio() {
+            if (voiceCtx) return;
+            voiceCtx = new (window.AudioContext || window.webkitAudioContext)();
+            voiceGain = voiceCtx.createGain();
+            voiceGain.gain.value = 1.0;
+            voiceGain.connect(voiceCtx.destination);
+            await Promise.all([
+                loadVoiceBuffer('begin', 'recording/begin.m4a'),
+                loadVoiceBuffer('choose', 'recording/choose.m4a'),
+                // 预加载 0-9 数字按键语音
+                ...Array.from({length: 10}, (_, i) =>
+                    loadVoiceBuffer('digit_' + i, 'recording/' + i + '.m4a')
+                )
+            ]);
+        }
+
+        async function loadVoiceBuffer(name, url) {
+            try {
+                const response = await fetch(url);
+                const arrayBuffer = await response.arrayBuffer();
+                voiceBuffers[name] = await voiceCtx.decodeAudioData(arrayBuffer);
+            } catch (e) {
+                console.warn('Failed to load voice:', name, e);
+            }
+        }
+
+        function playVoiceSequence() {
+            if (!voiceCtx || !voiceBuffers.begin || !voiceBuffers.choose) return;
+            if (voiceCtx.state === 'suspended') voiceCtx.resume();
+            stopVoice();
+
+            const now = voiceCtx.currentTime;
+            const beginDuration = voiceBuffers.begin.duration;
+
+            // 调度 begin.m4a：从 0 开始
+            const src1 = voiceCtx.createBufferSource();
+            src1.buffer = voiceBuffers.begin;
+            src1.connect(voiceGain);
+            src1.start(now);
+            voiceSources.push(src1);
+
+            // 调度 choose.m4a：紧跟 begin.m4a 之后
+            const src2 = voiceCtx.createBufferSource();
+            src2.buffer = voiceBuffers.choose;
+            src2.connect(voiceGain);
+            src2.start(now + beginDuration);
+            voiceSources.push(src2);
+
+            // choose.m4a 播完后显示"请按键选择"
+            src2.onended = function() {
+                ivrStatusEl.innerText = '请按键选择';
+            };
+
+            // begin.m4a 播完后切换到 IVR 界面
+            ivrTimer = setTimeout(() => {
+                startIVR();
+            }, beginDuration * 1000);
+        }
+
+        function stopVoice() {
+            voiceSources.forEach(s => {
+                try { s.onended = null; s.stop(); } catch(e) {}
+            });
+            voiceSources = [];
+            if (ivrTimer) { clearTimeout(ivrTimer); ivrTimer = null; }
+            // 同时停止数字按键录音
+            if (currentDigitSource) {
+                try { currentDigitSource.onended = null; currentDigitSource.stop(); } catch(e) {}
+                currentDigitSource = null;
+            }
+        }
+
+        // 播放数字按键语音（使用 Web Audio API，与 begin/choose 同样方式）
+        let currentDigitSource = null;
+        function playDigit(key, onEnded) {
+            // 停止上一个按键的播放
+            if (currentDigitSource) {
+                try { currentDigitSource.onended = null; currentDigitSource.stop(); } catch(e) {}
+                currentDigitSource = null;
+            }
+            const buffer = voiceBuffers['digit_' + key];
+            if (!buffer) return;
+            if (voiceCtx.state === 'suspended') voiceCtx.resume();
+
+            const src = voiceCtx.createBufferSource();
+            src.buffer = buffer;
+            src.onended = function() {
+                currentDigitSource = null;
+                if (onEnded) onEnded();
+            };
+            src.connect(voiceGain);
+            src.start(0);
+            currentDigitSource = src;
+        }
+
+        // 移动端浏览器需要用户交互后才能播放音频
+        // 只有在响铃状态才播放铃声
+        function onTouchPlay() {
+            if (ringAudio.dataset.playing === 'true') {
+                ringAudio.play().catch(() => {});
+            }
+        }
+        document.addEventListener('touchstart', onTouchPlay, { passive: true });
+        document.addEventListener('click', onTouchPlay, { passive: true });
+
+        // 页面可见性变化时确保铃声继续播放（仅响铃状态）
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && ringAudio.paused && ringAudio.dataset.playing === 'true') {
+                ringAudio.play().catch(() => {});
+            }
+        });
+
+        function startRinging() {
+            ringAudio.dataset.playing = 'true';
+            ringAudio.currentTime = 0;
+            ringAudio.play().catch(() => {});
+        }
+
+        function stopRinging() {
+            ringAudio.dataset.playing = 'false';
+            ringAudio.pause();
+            ringAudio.currentTime = 0;
+        }
+
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const s = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function showToast(msg, duration) {
+            duration = duration || 1500;
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), duration);
+        }
+
+        function stopRipple() {
+            ripples.forEach(r => r.style.animation = 'none');
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            topTimerEl.classList.add('visible'); // 显示顶部计时器
+            statusEl.innerText = ""; // 清空中间的状态文字
+            
+            timerInterval = setInterval(() => {
+                seconds++;
+                const timeStr = formatTime(seconds);
+                topTimerEl.innerText = timeStr; // 仅更新顶部时间
+            }, 1000);
+        }
+
+        function handleReject() {
+            statusEl.innerText = "已拒绝";
+            statusEl.style.color = "#fa5151";
+            stopRipple();
+            stopRinging();
+            showToast("已拒绝");
+        }
+
+        function handleAccept() {
+            incomingActions.classList.add('hidden');
+            ongoingActions.classList.remove('hidden');
+            stopRipple();
+            stopRinging();
+            statusEl.innerText = "";
+            statusEl.style.color = "transparent";
+            startTimer();
+
+            // 初始化语音系统，一次性调度 begin.m4a + choose.m4a 背靠背播放
+            initVoiceAudio().then(() => {
+                playVoiceSequence();
+            });
+        }
+
+        function handleHangup() {
+            clearInterval(timerInterval);
+            stopRinging();
+            // 停止语音播放
+            stopVoice();
+            hideIVR();
+            const duration = formatTime(seconds);
+            document.getElementById('endedDetail').innerText = '通话时长 ' + duration;
+            document.getElementById('endedOverlay').classList.add('show');
+            // 播放挂断铃声
+            new Audio('recording/done.mp3').play().catch(() => {});
+        }
+
+        function closeEnded() {
+            document.getElementById('endedOverlay').classList.remove('show');
+            resetToIncoming();
+        }
+
+        function recall() {
+            document.getElementById('endedOverlay').classList.remove('show');
+            resetToIncoming();
+            showToast("正在呼叫...");
+        }
+
+        function resetToIncoming() {
+            topTimerEl.classList.remove('visible');
+            ongoingActions.classList.add('hidden');
+            incomingActions.classList.remove('hidden');
+            document.getElementById('ivrOverlay') && document.getElementById('ivrOverlay').classList.remove('show');
+            hideIVR();
+            // 确保语音停止
+            stopVoice();
+            statusEl.innerText = "邀请你语音通话...";
+            statusEl.style.color = "rgba(255, 255, 255, 0.6)";
+            seconds = 0;
+            startRinging();
+            topTimerEl.classList.remove('visible');
+
+            // 重置麦克风/扬声器状态
+            document.querySelectorAll('#ongoing-actions .btn-feature').forEach(btn => {
+                btn.classList.add('active');
+                btn.classList.remove('muted');
+                const iconOn = btn.querySelector('.icon-on');
+                const iconOff = btn.querySelector('.icon-off');
+                if (iconOn) iconOn.classList.remove('hidden');
+                if (iconOff) iconOff.classList.add('hidden');
+            });
+
+            // 重启波纹
+            ripples.forEach(r => {
+                r.style.animation = '';
+                void r.offsetWidth;
+                r.style.animation = 'ripple-anim 2s infinite cubic-bezier(0, 0.2, 0.8, 1)';
+            });
+        }
+
+        // ========== 全局音量控制 ==========
+        let isMuted = false;
+
+        function toggleSpeaker() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('speakerBtn');
+            const iconBtn = btn.querySelector('.icon-btn');
+            const iconOn = iconBtn.querySelector('.icon-on');
+            const iconOff = iconBtn.querySelector('.icon-off');
+            const label = btn.querySelector('.label');
+
+            // 更新按钮视觉状态
+            iconBtn.classList.toggle('muted', isMuted);
+            iconBtn.classList.toggle('active', !isMuted);
+            iconOn.classList.toggle('hidden', isMuted);
+            iconOff.classList.toggle('hidden', !isMuted);
+            label.innerText = isMuted ? '扬声器已关' : '扬声器已开';
+
+            // 应用静音状态到所有音频源
+            applyMuteState();
+        }
+
+        function applyMuteState() {
+            // 铃声
+            ringAudio.volume = isMuted ? 0 : 1;
+            // 语音留言 + 数字按键（Web Audio API 统一控制）
+            if (voiceGain) {
+                voiceGain.gain.value = isMuted ? 0 : 1.0;
+            }
+        }
+
+        function toggleFeature(element) {
+            const btn = element.querySelector('.icon-btn');
+            const iconOn = btn.querySelector('.icon-on');
+            const iconOff = btn.querySelector('.icon-off');
+
+            const isMuted = btn.classList.toggle('muted');
+            btn.classList.toggle('active', !isMuted);
+
+            if (iconOn && iconOff) {
+                iconOn.classList.toggle('hidden', isMuted);
+                iconOff.classList.toggle('hidden', !isMuted);
+            }
+        }
+
+        // ========== IVR 语音信箱系统 ==========
+        const ivrMessageEl = document.getElementById('ivrMessage');
+        const ivrTextEl = document.getElementById('ivrText');
+        const ivrStatusEl = document.getElementById('ivrStatus');
+        const dialpadSection = document.getElementById('dialpadSection');
+        let audioCtx = null;
+
+        function startIVR() {
+            // 缩小顶部区域
+            document.querySelector('.top-section').classList.add('ivr-active');
+            // 显示IVR元素
+            ivrMessageEl.classList.add('show');
+            ivrStatusEl.classList.add('show');
+            dialpadSection.classList.add('show');
+            ivrStatusEl.innerText = '正在播放...';
+        }
+
+        function hideIVR() {
+            document.querySelector('.top-section').classList.remove('ivr-active');
+            ivrMessageEl.classList.remove('show');
+            ivrStatusEl.classList.remove('show');
+            dialpadSection.classList.remove('show');
+        }
+
+        function handleKeyPress(key) {
+            playDTMF(key);
+            ivrStatusEl.innerText = '按键 ' + key;
+
+            // 数字键 0-9 播放对应 .m4a 文件
+            if (/^[0-9]$/.test(key)) {
+                playDigit(key, () => {
+                    ivrStatusEl.innerText = '请按键选择';
+                });
+            } else {
+                showToast('该功能暂未开放');
+            }
+        }
+
+        function playDTMF(key) {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const freqMap = {
+                '1': [697, 1209], '2': [697, 1336], '3': [697, 1477],
+                '4': [770, 1209], '5': [770, 1336], '6': [770, 1477],
+                '7': [852, 1209], '8': [852, 1336], '9': [852, 1477],
+                '*': [941, 1209], '0': [941, 1336], '#': [941, 1477]
+            };
+            const freqs = freqMap[key];
+            if (!freqs) return;
+            if (isMuted) return; // 静音时不播放 DTMF
+
+            const duration = 0.15;
+            const now = audioCtx.currentTime;
+            freqs.forEach(freq => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            });
+        }
+
+        // 铃声由 initAudioOnTouch 在用户第一次触摸时启动
+        // 浏览器不允许页面加载时自动播放音频，必须等待用户交互
+    </script>
+</body>
+</html>
+
+
